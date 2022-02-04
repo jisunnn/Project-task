@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapperInterface.AskMapper">
+
+
+
+
+<!-- ** 답글입력 ~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->	
+	<update id="stepUpdate">
+		update ask set step=step+1 where root=#{root} and step>=#{step}
+	</update>
+	
+	<insert id="ansinsert">
+		<selectKey keyProperty="seq" resultType="int" order="BEFORE">
+			select nvl(max(seq),0)+1 from ask
+		</selectKey>
+		insert into ask values (
+			#{seq},
+			#{title},SYSTIMESTAMP,#{content},#{id},#{root},#{indent},#{step})
+	</insert>  
+
+<!-- ** PageList ~~~~~~~~~~~~~~~~~~~~~~ -->
+	<select id="totalRowCount" resultType="int">
+		select count(*) from ask
+	</select>
+	
+	<select id="pageList" resultType="vo.AskVO">
+		select seq,title,id,regdate,root,indent,step from 
+		(select a.* , ROW_NUMBER() OVER(order by root desc, step asc) rnum from ask a) 
+		where rnum between #{sno} and #{eno}
+	</select>
+
+	<select id="selectList" resultType="vo.AskVO">
+		select seq,title,regdate,id,root,indent,step from 
+		ask order by root desc, step asc
+	</select>
+	
+	<select id="selectOne" resultType="vo.AskVO">
+		select * from ask where seq = #{seq}
+	</select>
+	
+	<!-- 원글입력 -->
+	<insert id="insert">
+		<selectKey keyProperty="seq" resultType="int" order="BEFORE">
+			select nvl(max(seq),0)+1 from ask
+		</selectKey>
+		insert into ask values ( 
+			#{seq},#{title},SYSTIMESTAMP,#{content},#{id},
+			#{seq},0,0)
+	</insert>
+	
+	<update id="update">
+		update ask set title=#{title}, content=#{content} where seq=#{seq}
+	</update>
+	
+	<delete id="delete">
+		DELETE from ask
+		<if test="seq==root">where root=#{seq}</if> 
+		<!-- 원글삭제 : 동일한 root를 가진 글들은 모두 삭제 -->
+		<if test="seq!=root">where seq=#{seq}</if> 
+		<!-- 답글삭제 -->
+	</delete>
+
+</mapper>
