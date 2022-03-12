@@ -1,0 +1,27 @@
+** Trigger 사용: d_member 테이블 변경시 ranking 테이블이 변경됨  **
+
+
+1.d_member 테이블에 데이터가 입력되는 경우
+    create or replace TRIGGER ranking_insert 
+    AFTER insert on d_member 
+    for each row
+        begin
+            insert into ranking (id, nick, point) values(:NEW.id, :NEW.nick, :NEW.point);
+        end;
+        
+2.d_member 테이블의 데이터가 업데이트 되는 경우
+    create or replace TRIGGER ranking_update 
+    AFTER update on d_member 
+    for each row
+        begin
+            update ranking  set point=:new.point where id=:old.id;
+        end;
+
+
+3. d_member 테이블의 데이터가 삭제되는 경우
+    create or replace TRIGGER ranking_delete 
+    AFTER delete on d_member 
+    for each row
+        begin
+            delete from ranking where id=:old.id;
+        end;
