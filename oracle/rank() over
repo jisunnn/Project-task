@@ -11,3 +11,5 @@
      
 **mybatis Rankingmapper.xml에도 변경사항 업데이트 완료
 ('<, >'부등호 사용 불가-> <![CDATA[<]]> 혹은 조건문 통째로 <![CDATA[  ROWNUM <= 5 ]]>)
+
+
