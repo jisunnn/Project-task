@@ -1,0 +1,10 @@
+** 랭킹 정렬 함수 사용 **
+
+- point 높은 기준, 오름차순으로 5위까지만 랭킹 정렬
+    SELECT ID 
+         ,POINT  
+         ,RANK() OVER (ORDER BY POINT DESC) RANK FROM RANKING 
+     WHERE ROWNUM <= 5    
+     ORDER BY POINT DESC;
+     
+**mybatis Rankingmapper.xml에도 변경사항 업데이트 완료     
